@@ -19,4 +19,5 @@
     <string name="login_signup_link">https://www.themoviedb.org/signup</string>
     <string name="login_password_reset">https://www.themoviedb.org/reset-password</string>
     <string name="movies_list_popularity_icon">Star</string>
+    <string name="moviieDetail_add_description">Add movie to favorites</string>
 </resources>

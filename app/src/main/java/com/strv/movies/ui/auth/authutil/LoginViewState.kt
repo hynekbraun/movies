@@ -1,4 +1,4 @@
-package com.strv.movies.ui.auth
+package com.strv.movies.ui.auth.authutil
 
 data class LoginViewState(
     val user: String = "",

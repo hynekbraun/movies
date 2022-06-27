@@ -1,4 +1,4 @@
-package com.strv.movies.ui.moviedetail
+package com.strv.movies.ui.moviedetail.moviedetailutil
 
 import com.strv.movies.model.MovieDetail
 import com.strv.movies.model.Trailer

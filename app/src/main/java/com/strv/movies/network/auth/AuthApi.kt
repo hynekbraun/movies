@@ -4,6 +4,7 @@ import com.strv.movies.model.CreateSessionBody
 import com.strv.movies.model.CreateSessionResponse
 import com.strv.movies.model.DeleteSessionBody
 import com.strv.movies.model.DeleteSessionResponse
+import com.strv.movies.model.PopularMoviesDTO
 import com.strv.movies.model.ValidateRequestTokenBody
 import com.strv.movies.model.RequestTokenResponse
 import com.strv.movies.model.ValidateRequestTokenResponse
@@ -12,6 +13,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.HTTP
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface AuthApi {
     @GET("authentication/token/new")

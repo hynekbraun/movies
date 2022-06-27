@@ -7,6 +7,8 @@ import com.strv.movies.extension.fold
 import com.strv.movies.network.auth.AuthError
 import com.strv.movies.network.auth.AuthRepository
 import com.strv.movies.network.auth.LoginEvent
+import com.strv.movies.ui.auth.authutil.LoginSnackbarManager
+import com.strv.movies.ui.auth.authutil.LoginViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +23,7 @@ class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _errorFlow = Channel<LoginSnackbarNotification>()
+    private val _errorFlow = Channel<LoginSnackbarManager>()
     val errorFlow = _errorFlow.receiveAsFlow()
 
     private val _viewState = MutableStateFlow(LoginViewState())
@@ -35,7 +37,7 @@ class LoginViewModel @Inject constructor(
             is LoginEvent.UpdateUsername -> updateName(event.input)
             LoginEvent.OnClickNotImplemented -> {
                 viewModelScope.launch {
-                    _errorFlow.send(LoginSnackbarNotification.FunctionNotSupported)
+                    _errorFlow.send(LoginSnackbarManager.FunctionNotSupported)
                 }
             }
         }
@@ -49,16 +51,16 @@ class LoginViewModel @Inject constructor(
             ).fold(
                 { error ->
                     if (_viewState.value.user.isBlank()) {
-                        _errorFlow.send(LoginSnackbarNotification.UsernameSnackbar)
+                        _errorFlow.send(LoginSnackbarManager.UsernameSnackbar)
                     } else if (_viewState.value.password.isBlank()) {
-                        _errorFlow.send(LoginSnackbarNotification.PasswordSnackbar)
+                        _errorFlow.send(LoginSnackbarManager.PasswordSnackbar)
                     } else if (error == AuthError.NETWORK_ERROR) {
 
-                        _errorFlow.send(LoginSnackbarNotification.NetworkError)
+                        _errorFlow.send(LoginSnackbarManager.NetworkError)
                     } else if (error == AuthError.INVALID_CREDENTIALS) {
-                        _errorFlow.send(LoginSnackbarNotification.CredentialsError)
+                        _errorFlow.send(LoginSnackbarManager.CredentialsError)
                     } else {
-                        _errorFlow.send(LoginSnackbarNotification.GenericError)
+                        _errorFlow.send(LoginSnackbarManager.GenericError)
                     }
                     Log.d("TAG", "Login failed - ${error.name}")
                 },

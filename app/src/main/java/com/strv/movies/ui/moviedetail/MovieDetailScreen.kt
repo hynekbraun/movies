@@ -2,8 +2,8 @@ package com.strv.movies.ui.moviedetail
 
 import android.content.res.Configuration
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -12,15 +12,22 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.FabPosition
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -42,6 +49,7 @@ import com.strv.movies.model.Trailer
 import com.strv.movies.ui.components.CustomTopAppBar
 import com.strv.movies.ui.error.ErrorScreen
 import com.strv.movies.ui.loading.LoadingScreen
+import com.strv.movies.ui.moviedetail.moviedetailutil.MovieDetailViewState
 
 @Composable
 fun MovieDetailScreen(
@@ -63,13 +71,24 @@ fun MovieDetailScreen(
                 showNavIcon = true,
                 modifier = Modifier
                     .padding(start = 12.dp)
-                    .clickable { onNavigateBackClick() }            )
+                    .clickable { onNavigateBackClick() })
+        },
+        floatingActionButtonPosition = FabPosition.End,
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                viewModel::addMovieToFavorites
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.moviieDetail_add_description)
+                )
+            }
         }
     ) {
         if (viewState.loading) {
             LoadingScreen()
         } else if (viewState.error != null) {
-            ErrorScreen(errorMessage = viewState.error!!)
+            MovieDetailErrorScreen(errorMessage = viewState.error!!)
         } else {
             viewState.movie?.let {
                 MovieDetail(
@@ -184,7 +203,13 @@ fun GenresList(genres: List<Genre>) {
         itemsIndexed(items = genres) { _, item ->
             Text(
                 text = item.name,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier
+                    .padding(12.dp)
+                    .clip(shape = MaterialTheme.shapes.medium)
+                    .background(color = MaterialTheme.colors.primaryVariant)
+                    .padding(6.dp),
+                color = MaterialTheme.colors.onPrimary,
+                fontSize = 14.sp
             )
         }
     }

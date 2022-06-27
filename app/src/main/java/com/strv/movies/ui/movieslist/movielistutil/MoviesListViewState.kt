@@ -1,4 +1,4 @@
-package com.strv.movies.ui.movieslist
+package com.strv.movies.ui.movieslist.movielistutil
 
 import com.strv.movies.model.Movie
 

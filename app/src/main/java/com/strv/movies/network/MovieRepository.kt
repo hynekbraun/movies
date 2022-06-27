@@ -52,6 +52,7 @@ class MovieRepository @Inject constructor(
             val isDbEmpty = moviesDao.observePopularMovies().isEmpty()
             if (fetchFromRemote || isDbEmpty) {
                 try {
+                    Log.d("REFRESH", "Repository: fetch movie from remote")
                     val response = api.getPopularMovies().results.map { it.toEntity() }
                     if (response.isNotEmpty()) {
                         moviesDao.deleteMovies()
@@ -66,7 +67,8 @@ class MovieRepository @Inject constructor(
                     emit(Either.Error(t.localizedMessage ?: "Network Error"))
                 }
             } else {
-                val localData = moviesDao.observePopularMovies().map { it.toDomain() }
+                val localData = moviesDao.observePopularMovies()
+                    .map { it.toDomain() }
                     .sortedByDescending { it.popularity }
                 emit(Either.Value(localData))
                 Log.d("REFRESH", "Repository: Loaded from cache")
@@ -85,5 +87,7 @@ class MovieRepository @Inject constructor(
             moviesDao.insertMovieGenres(movie.genres.map { it.toEntity(movie.id) })
         }
     }
+
+
 
 }

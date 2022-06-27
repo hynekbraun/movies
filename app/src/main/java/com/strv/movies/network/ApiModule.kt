@@ -25,4 +25,6 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideProfileApi(@AuthorizedRetrofit retrofit: Retrofit): ProfileApi = retrofit.create()
+
+
 }

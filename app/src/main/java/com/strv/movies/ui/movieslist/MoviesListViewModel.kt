@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.strv.movies.extension.fold
 import com.strv.movies.network.MovieRepository
+import com.strv.movies.ui.movieslist.movielistutil.MoviesListViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,14 +20,14 @@ class MoviesListViewModel @Inject constructor(
     private val movieRepository: MovieRepository
 ) : ViewModel() {
     private val _viewState = mutableStateOf(MoviesListViewState())
-    val viewState = _viewState
+    val viewState get() = _viewState
 
     init {
         observePopularMovies(false)
     }
 
     private fun observePopularMovies(fromNetwork: Boolean) {
-        _viewState.value = viewState.value.copy(loading = fromNetwork)
+        _viewState.value = viewState.value.copy(error = null,loading = fromNetwork)
         viewModelScope.launch {
             movieRepository.fetchPopularMovies(fromNetwork).collect { response ->
                 response.fold(

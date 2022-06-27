@@ -5,15 +5,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.strv.movies.extension.fold
-import com.strv.movies.model.MovieDetail
-import com.strv.movies.model.Trailer
 import com.strv.movies.network.MovieRepository
+import com.strv.movies.ui.moviedetail.moviedetailutil.MovieDetailViewState
 import com.strv.movies.ui.navigation.MoviesNavArguments
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -86,6 +84,10 @@ class MovieDetailViewModel @Inject constructor(
             _viewState.value =
                 _viewState.value.copy(movie = detail, loading = false, error = null)
         }
+    }
+
+    fun addMovieToFavorites(){
+
     }
 
     fun updateVideoProgress(progress: Float) {
