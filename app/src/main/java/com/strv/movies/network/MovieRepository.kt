@@ -68,14 +68,14 @@ class MovieRepository @Inject constructor(
         Log.d("FAVORITE", "MovieRepository: Movie id $movieId")
         return try {
             val accountId = profileApi.getAccountDetails()
-            Log.d("FAVORITE", "MovieRepository: Success ${accountId.id}")
+            Log.d("FAVORITE", "MovieRepository: Success Account id: ${accountId.id}")
             val movieBody = AddFavoriteBody(mediaType = "movie",mediaId = movieId, favourite = true)
             val response = profileApi.addToFavorite(accountId.id, movieBody)
-            Log.d("FAVORITE", "MovieRepository: Success ${response.statusCode}")
+            Log.d("FAVORITE", "MovieRepository: Success added to favorite: ${response}")
             Either.Value(response.statusMessage)
-        } catch (e: Exception) {
-            Log.d("FAVORITE", "MovieRepository: Error ${e.localizedMessage}")
-            Either.Error(e.localizedMessage ?: "Error getting to favorite")
+        } catch (t: Throwable) {
+            Log.d("FAVORITE", "MovieRepository: Error ${t.cause}")
+            Either.Error(t.localizedMessage ?: "Error getting to favorite")
         }
     }
 

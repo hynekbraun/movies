@@ -16,7 +16,7 @@ interface ProfileApi {
     @GET("account/{account_id}/favorite/movies")
     suspend fun getFavoriteMovies(@Path("account_id") accountId: Int): PopularMoviesDTO
 
-    @POST("/account/{account_id}/favorite")
+    @POST("account/{account_id}/favorite")
     suspend fun addToFavorite(
         @Path("account_id") accountId: Int,
         @Body body: AddFavoriteBody

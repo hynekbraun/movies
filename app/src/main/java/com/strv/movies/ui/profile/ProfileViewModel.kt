@@ -84,7 +84,6 @@ class ProfileViewModel @Inject constructor(
             )
             fetchFavoriteMovies()
         }
-
     }
 
     private fun logout(
