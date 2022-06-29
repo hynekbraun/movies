@@ -86,11 +86,22 @@ class MovieDetailViewModel @Inject constructor(
         }
     }
 
-    fun addMovieToFavorites(){
+    fun addMovieToFavorites() {
+        viewModelScope.launch {
+            Log.d("FAVORITE", "ViewModel addToFavorite Triggered")
+            movieRepository.addToFavorite(movieId).fold({ error ->
+                Log.d("FAVORITE", "ViewModel addToFavorite Error $error")
+                _viewState.update { MovieDetailViewState(error = error) }
+            },
+                {
+                    Log.d("FAVORITE", "ViewModel add to Favorite Success $it")
+                })
 
+        }
     }
 
     fun updateVideoProgress(progress: Float) {
         _viewState.update { it.copy(videoProgress = progress) }
     }
+
 }

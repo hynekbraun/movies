@@ -75,9 +75,10 @@ fun MovieDetailScreen(
         },
         floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
-            FloatingActionButton(onClick = {
+            FloatingActionButton(
+                onClick =
                 viewModel::addMovieToFavorites
-            }) {
+            ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = stringResource(R.string.moviieDetail_add_description)
