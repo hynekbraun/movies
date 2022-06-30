@@ -21,5 +21,4 @@ interface ProfileApi {
         @Path("account_id") accountId: Int,
         @Body body: AddFavoriteBody
     ): AddFavoriteResponse
-
 }

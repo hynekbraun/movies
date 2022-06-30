@@ -66,11 +66,11 @@ fun LogInScreen(
     } else {
         painterResource(id = R.drawable.ic_visible)
     }
-    LaunchedEffect(key1 = viewModel.errorFlow) {
+    LaunchedEffect(key1 = viewModel.snackbarFlow) {
         Log.d("TAG", "launch effect launched")
         coroutineScope.launch {
-            viewModel.errorFlow.collect {
-                snackBarHostState.showSnackbar(message = it.message)
+            viewModel.snackbarFlow.collect { errorMessage ->
+                snackBarHostState.showSnackbar(message = errorMessage.message)
             }
         }
     }

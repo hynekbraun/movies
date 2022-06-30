@@ -5,13 +5,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.strv.movies.extension.fold
+import com.strv.movies.network.AddToFavoriteError
 import com.strv.movies.network.MovieRepository
+import com.strv.movies.ui.moviedetail.moviedetailutil.MovieDetailSnackbarManager
 import com.strv.movies.ui.moviedetail.moviedetailutil.MovieDetailViewState
 import com.strv.movies.ui.navigation.MoviesNavArguments
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,8 +30,11 @@ class MovieDetailViewModel @Inject constructor(
             "Movie id is missing..."
         }
 
-    private val _viewState = MutableStateFlow(MovieDetailViewState(loading = true))
-    val viewState = _viewState.asStateFlow()
+    private val _snackbarFlow = Channel<MovieDetailSnackbarManager>()
+    val snackbarFlow = _snackbarFlow.receiveAsFlow()
+
+    var viewState = MutableStateFlow(MovieDetailViewState(loading = true))
+        private set
 
     init {
         Log.d("TAG", "ViewModel init triggered")
@@ -38,7 +44,7 @@ class MovieDetailViewModel @Inject constructor(
             movieRepository.fetchMovieDetail(movieId).fold(
                 { error ->
                     Log.d("TAG", "MovieDetailLoadingError: $error")
-                    _viewState.update {
+                    viewState.update {
                         MovieDetailViewState(
                             error = error
                         )
@@ -66,14 +72,12 @@ class MovieDetailViewModel @Inject constructor(
         movieRepository.fetchMovieTrailer(movieId).fold(
             { error ->
                 Log.d("TAG", "ViewModel MovieTrailer Error")
-                _viewState.update {
-                    MovieDetailViewState(error = error)
-                }
+                _snackbarFlow.send(MovieDetailSnackbarManager.TrailerError)
             },
             {
                 Log.d("TAG", "ViewModel MovieTrailer Success $it")
-                _viewState.value =
-                    _viewState.value.copy(trailer = it, loading = false, error = null)
+                viewState.value =
+                    viewState.value.copy(trailer = it, loading = false, error = null)
             }
         )
     }
@@ -81,8 +85,8 @@ class MovieDetailViewModel @Inject constructor(
     private suspend fun getDetail() {
         movieRepository.observeMovieDetail(movieId).collect { detail ->
             Log.d("TAG", "ViewModel MovieDetail collected $detail")
-            _viewState.value =
-                _viewState.value.copy(movie = detail, loading = false, error = null)
+            viewState.value =
+                viewState.value.copy(movie = detail, loading = false, error = null)
         }
     }
 
@@ -91,17 +95,24 @@ class MovieDetailViewModel @Inject constructor(
             Log.d("FAVORITE", "ViewModel addToFavorite Triggered")
             movieRepository.addToFavorite(movieId).fold({ error ->
                 Log.d("FAVORITE", "ViewModel addToFavorite Error $error")
-                _viewState.update { MovieDetailViewState(error = error) }
+                when (error) {
+                    AddToFavoriteError.NETWORK_ERROR -> _snackbarFlow.send(
+                        MovieDetailSnackbarManager.NetworkError
+                    )
+                    AddToFavoriteError.CREDENTIALS_ERROR -> _snackbarFlow.send(
+                        MovieDetailSnackbarManager.AccountError
+                    )
+                }
             },
                 {
                     Log.d("FAVORITE", "ViewModel add to Favorite Success $it")
+                    _snackbarFlow.send(MovieDetailSnackbarManager.Success)
                 })
-
         }
     }
 
     fun updateVideoProgress(progress: Float) {
-        _viewState.update { it.copy(videoProgress = progress) }
+        viewState.update { it.copy(videoProgress = progress) }
     }
 
 }
