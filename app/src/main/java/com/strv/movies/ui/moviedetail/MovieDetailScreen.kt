@@ -2,7 +2,6 @@ package com.strv.movies.ui.moviedetail
 
 import android.content.res.Configuration
 import android.util.Log
-import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -13,20 +12,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.FabPosition
-import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -37,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -57,7 +49,6 @@ import com.strv.movies.model.Genre
 import com.strv.movies.model.MovieDetail
 import com.strv.movies.model.Trailer
 import com.strv.movies.ui.components.CustomTopAppBar
-import com.strv.movies.ui.error.ErrorScreen
 import com.strv.movies.ui.loading.LoadingScreen
 import com.strv.movies.ui.moviedetail.moviedetailutil.MovieDetailViewState
 import kotlinx.coroutines.launch
@@ -73,11 +64,12 @@ fun MovieDetailScreen(
     val viewState by viewModel.viewState.collectAsState(MovieDetailViewState(loading = true))
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     LaunchedEffect(key1 = viewModel.snackbarFlow) {
         coroutineScope.launch {
             viewModel.snackbarFlow.collect { errorMessage ->
-                snackBarHostState.showSnackbar(message = errorMessage.message)
+                snackBarHostState.showSnackbar(message = errorMessage.asString(context))
             }
         }
     }
@@ -197,7 +189,7 @@ fun MovieInfo(
         ) {
             Icon(
                 imageVector = Icons.Default.AddCircle,
-                contentDescription = stringResource(id = R.string.moviieDetail_add_description),
+                contentDescription = stringResource(id = R.string.movieDetail_add_description),
                 modifier = Modifier
                     .clickable(
                         interactionSource = MutableInteractionSource(),

@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,6 +54,7 @@ fun LogInScreen(
     val viewState by viewModel.viewState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     val userName = viewState.user
     val password = viewState.password
     val uriHandler = LocalUriHandler.current
@@ -70,7 +72,7 @@ fun LogInScreen(
         Log.d("TAG", "launch effect launched")
         coroutineScope.launch {
             viewModel.snackbarFlow.collect { errorMessage ->
-                snackBarHostState.showSnackbar(message = errorMessage.message)
+                snackBarHostState.showSnackbar(message = errorMessage.asString(context))
             }
         }
     }
