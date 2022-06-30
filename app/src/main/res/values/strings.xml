@@ -3,16 +3,17 @@
     <string name="app_name">Movies</string>
     <string name="movie_image">Movie image</string>
     <string name="profile_title">My Profile</string>
+    <string name="app_logo">App logo</string>
 
     //shared
     <string name="genericError">Something went wrong</string>
     <string name="networkError">Network Error</string>
 
     //moviedetail
-    <string name="movieDetail_add_description">Add movie to favorites</string>
+    <string name="movieDetail_contentDesc_addToFavorit">Add movie to favorites</string>
     <string name="movieDetail_addToFavorite">Add to favorite</string>
     <string name="detailScreen_navigateBack">Go back to movie list</string>
-    <string name="movie_detail_title">Detail</string>
+    <string name="movieDetail_title">Detail</string>
         //snackbarManager
     <string name="movieDetailSnackbar_accountError">Problem with account</string>
     <string name="movieDetailSnackbar_savedToFavorites">Movie Successfully saved to favorites</string>
@@ -29,8 +30,8 @@
     <string name="login_signup">Create new account</string>
     <string name="login_contentDesc_googleIcon">Google logo</string>
     <string name="login_contentDesc_facebookIcon">Facebook icon</string>
-    <string name="login_signup_link">https://www.themoviedb.org/signup</string>
-    <string name="login_password_reset">https://www.themoviedb.org/reset-password</string>
+    <string name="login_signupLink">https://www.themoviedb.org/signup</string>
+    <string name="login_passwordReset">https://www.themoviedb.org/reset-password</string>
         //snackbarManager
     <string name="loginSnackbar_functionNotSupported">Function not supported</string>
     <string name="loginSnackbar_wrongCredentials">Wrong credentials</string>
@@ -38,9 +39,10 @@
     <string name="loginSnackbar_missingUserName">Please fill in the username</string>
 
     //movieList
-    <string name="movie_list_title">Movies</string>
-    <string name="movies_list_popularity_icon">Star</string>
-
+    <string name="movieList_title">Movies</string>
+    <string name="moviesList_contentDesc_popularityIcon">Star icon</string>
+    <string name="moviesList_noMoviesSaved">No Movies saved</string>
+    <string name="movieDetail_movieDetailNotLoaded">Could not load movie detail</string>
     //unsorted
 
 

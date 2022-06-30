@@ -9,12 +9,8 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.GridCells
@@ -30,17 +26,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -54,7 +50,9 @@ import com.strv.movies.R
 import com.strv.movies.model.Movie
 import com.strv.movies.ui.components.CustomTopAppBar
 import com.strv.movies.ui.error.ErrorScreen
+import com.strv.movies.ui.error.ErrorSource
 import com.strv.movies.ui.loading.LoadingScreen
+import kotlinx.coroutines.launch
 
 @Composable
 fun MoviesListScreen(
@@ -65,9 +63,18 @@ fun MoviesListScreen(
 ) {
     val viewState by viewModel.viewState
     val snackBarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = viewState.isRefreshing
     )
+    LaunchedEffect(key1 = viewState) {
+        coroutineScope.launch {
+            viewModel.snackbarFlow.collect {
+                snackBarHostState.showSnackbar(it.asString(context))
+            }
+        }
+    }
 
     Scaffold(
         scaffoldState = rememberScaffoldState(snackbarHostState = snackBarHostState),
@@ -80,18 +87,16 @@ fun MoviesListScreen(
     ) {
         if (viewState.loading) {
             LoadingScreen()
-        } else if (viewState.error != null) {
-            ErrorScreen(errorMessage = viewState.error!!)
         } else {
             MoviesList(
                 movies = viewState.movies,
                 onMovieClick = navigateToMovieDetail,
                 refreshState = swipeRefreshState,
-                onRefresh = { viewModel.refreshData() }
+                onRefresh = { viewModel.refreshData() },
+                hasMovies = viewState.movies.isNotEmpty()
             )
         }
     }
-
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
@@ -100,10 +105,15 @@ fun MoviesList(
     movies: List<Movie>,
     onMovieClick: (movieId: Int) -> Unit,
     refreshState: SwipeRefreshState,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    hasMovies: Boolean
 ) {
     SwipeRefresh(state = refreshState,
-        onRefresh = { onRefresh() }) {
+        onRefresh = { onRefresh() })
+    {
+        if (!hasMovies) {
+            ErrorScreen(errorSource = ErrorSource.MOVIE_LIST)
+        }
         LazyVerticalGrid(
             contentPadding = PaddingValues(8.dp),
             cells = GridCells.Fixed(2)
@@ -154,7 +164,7 @@ fun MovieItem(movie: Movie, modifier: Modifier = Modifier) {
                     .background(MaterialTheme.colors.primaryVariant)
                     .padding(2.dp),
                 imageVector = Icons.Default.Star,
-                contentDescription = stringResource(R.string.movies_list_popularity_icon)
+                contentDescription = stringResource(R.string.moviesList_contentDesc_popularityIcon)
             )
             Text(
                 text = movie.popularity.dec().toString(),
