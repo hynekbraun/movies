@@ -1,10 +1,24 @@
 <resources>
+    //general
     <string name="app_name">Movies</string>
     <string name="movie_image">Movie image</string>
-    <string name="movie_list_title">Movies</string>
-    <string name="movie_detail_title">Detail</string>
     <string name="profile_title">My Profile</string>
 
+    //shared
+    <string name="genericError">Something went wrong</string>
+    <string name="networkError">Network Error</string>
+
+    //moviedetail
+    <string name="movieDetail_add_description">Add movie to favorites</string>
+    <string name="movieDetail_addToFavorite">Add to favorite</string>
+    <string name="detailScreen_navigateBack">Go back to movie list</string>
+    <string name="movie_detail_title">Detail</string>
+        //snackbarManager
+    <string name="movieDetailSnackbar_accountError">Problem with account</string>
+    <string name="movieDetailSnackbar_savedToFavorites">Movie Successfully saved to favorites</string>
+    <string name="movieDetailSnackbar_noTrailer">Could not find trailer</string>
+
+    //login
     <string name="login_login">Login</string>
     <string name="login_username">Username</string>
     <string name="login_contentDesc_emailIcon">Email Icon</string>
@@ -15,10 +29,19 @@
     <string name="login_signup">Create new account</string>
     <string name="login_contentDesc_googleIcon">Google logo</string>
     <string name="login_contentDesc_facebookIcon">Facebook icon</string>
-    <string name="detailScreen_navigateBack">Go back to movie list</string>
     <string name="login_signup_link">https://www.themoviedb.org/signup</string>
     <string name="login_password_reset">https://www.themoviedb.org/reset-password</string>
+        //snackbarManager
+    <string name="loginSnackbar_functionNotSupported">Function not supported</string>
+    <string name="loginSnackbar_wrongCredentials">Wrong credentials</string>
+    <string name="loginSnackbar_missingPassword">Please fill in the password</string>
+    <string name="loginSnackbar_missingUserName">Please fill in the username</string>
+
+    //movieList
+    <string name="movie_list_title">Movies</string>
     <string name="movies_list_popularity_icon">Star</string>
-    <string name="moviieDetail_add_description">Add movie to favorites</string>
-    <string name="movieDetail_addToFavorite">Add to favorite</string>
+
+    //unsorted
+
+
 </resources>
