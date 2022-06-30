@@ -58,8 +58,8 @@ fun LogInScreen(
     val userName = viewState.user
     val password = viewState.password
     val uriHandler = LocalUriHandler.current
-    val uriSignIn = stringResource(id = R.string.login_signup_link)
-    val uriPassword = stringResource(R.string.login_password_reset)
+    val uriSignIn = stringResource(id = R.string.login_signupLink)
+    val uriPassword = stringResource(R.string.login_passwordReset)
     var passwordVisibility by rememberSaveable {
         mutableStateOf(false)
     }
@@ -94,8 +94,8 @@ fun LogInScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_login_logo),
-                contentDescription = "App logo",
+                painter = painterResource(id = R.drawable.ic_app_logo),
+                contentDescription = stringResource(R.string.app_logo),
                 modifier = Modifier.padding(top = 20.dp)
             )
 

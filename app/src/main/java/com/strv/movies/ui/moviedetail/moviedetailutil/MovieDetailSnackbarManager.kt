@@ -15,8 +15,6 @@ sealed class MovieDetailSnackbarManager(@StringRes val resId: Int) {
         MovieDetailSnackbarManager(R.string.movieDetailSnackbar_accountError)
     object Success :
         MovieDetailSnackbarManager(R.string.movieDetailSnackbar_savedToFavorites)
-    object TrailerError :
-        MovieDetailSnackbarManager(R.string.movieDetailSnackbar_noTrailer)
     object GenericError :
         MovieDetailSnackbarManager(R.string.genericError)
 

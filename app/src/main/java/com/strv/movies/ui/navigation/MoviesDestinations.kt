@@ -23,7 +23,7 @@ sealed class BottomNavigationDestinations(
 ) {
     object MovieList : BottomNavigationDestinations(
         route = MOVIES_LIST_ROUTE,
-        navTitleResId = R.string.movie_list_title,
+        navTitleResId = R.string.movieList_title,
         navIcon = Icons.Default.List
     )
 

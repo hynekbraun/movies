@@ -72,7 +72,6 @@ class MovieDetailViewModel @Inject constructor(
         movieRepository.fetchMovieTrailer(movieId).fold(
             { error ->
                 Log.d("TAG", "ViewModel MovieTrailer Error")
-                _snackbarFlow.send(MovieDetailSnackbarManager.TrailerError)
             },
             {
                 Log.d("TAG", "ViewModel MovieTrailer Success $it")

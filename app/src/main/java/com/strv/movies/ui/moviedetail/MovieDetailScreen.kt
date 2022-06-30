@@ -49,6 +49,8 @@ import com.strv.movies.model.Genre
 import com.strv.movies.model.MovieDetail
 import com.strv.movies.model.Trailer
 import com.strv.movies.ui.components.CustomTopAppBar
+import com.strv.movies.ui.error.ErrorScreen
+import com.strv.movies.ui.error.ErrorSource
 import com.strv.movies.ui.loading.LoadingScreen
 import com.strv.movies.ui.moviedetail.moviedetailutil.MovieDetailViewState
 import kotlinx.coroutines.launch
@@ -89,7 +91,7 @@ fun MovieDetailScreen(
         if (viewState.loading) {
             LoadingScreen()
         } else if (viewState.error != null) {
-            MovieDetailErrorScreen(errorMessage = viewState.error!!)
+            ErrorScreen(errorSource = ErrorSource.MOVIE_DETAIL)
         } else {
             viewState.movie?.let {
                 MovieDetail(
@@ -189,7 +191,7 @@ fun MovieInfo(
         ) {
             Icon(
                 imageVector = Icons.Default.AddCircle,
-                contentDescription = stringResource(id = R.string.movieDetail_add_description),
+                contentDescription = stringResource(id = R.string.movieDetail_contentDesc_addToFavorit),
                 modifier = Modifier
                     .clickable(
                         interactionSource = MutableInteractionSource(),
