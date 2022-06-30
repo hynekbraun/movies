@@ -23,8 +23,8 @@ class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _errorFlow = Channel<LoginSnackbarManager>()
-    val errorFlow = _errorFlow.receiveAsFlow()
+    private val _snackbarFlow = Channel<LoginSnackbarManager>()
+    val snackbarFlow = _snackbarFlow.receiveAsFlow()
 
     private val _viewState = MutableStateFlow(LoginViewState())
     val viewState = _viewState.asStateFlow()
@@ -37,7 +37,7 @@ class LoginViewModel @Inject constructor(
             is LoginEvent.UpdateUsername -> updateName(event.input)
             LoginEvent.OnClickNotImplemented -> {
                 viewModelScope.launch {
-                    _errorFlow.send(LoginSnackbarManager.FunctionNotSupported)
+                    _snackbarFlow.send(LoginSnackbarManager.FunctionNotSupported)
                 }
             }
         }
@@ -51,16 +51,16 @@ class LoginViewModel @Inject constructor(
             ).fold(
                 { error ->
                     if (_viewState.value.user.isBlank()) {
-                        _errorFlow.send(LoginSnackbarManager.UsernameSnackbar)
+                        _snackbarFlow.send(LoginSnackbarManager.UsernameSnackbar)
                     } else if (_viewState.value.password.isBlank()) {
-                        _errorFlow.send(LoginSnackbarManager.PasswordSnackbar)
+                        _snackbarFlow.send(LoginSnackbarManager.PasswordSnackbar)
                     } else if (error == AuthError.NETWORK_ERROR) {
 
-                        _errorFlow.send(LoginSnackbarManager.NetworkError)
+                        _snackbarFlow.send(LoginSnackbarManager.NetworkError)
                     } else if (error == AuthError.INVALID_CREDENTIALS) {
-                        _errorFlow.send(LoginSnackbarManager.CredentialsError)
+                        _snackbarFlow.send(LoginSnackbarManager.CredentialsError)
                     } else {
-                        _errorFlow.send(LoginSnackbarManager.GenericError)
+                        _snackbarFlow.send(LoginSnackbarManager.GenericError)
                     }
                     Log.d("TAG", "Login failed - ${error.name}")
                 },

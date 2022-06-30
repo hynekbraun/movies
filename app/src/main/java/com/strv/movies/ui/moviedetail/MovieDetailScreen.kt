@@ -2,8 +2,10 @@ package com.strv.movies.ui.moviedetail
 
 import android.content.res.Configuration
 import android.util.Log
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -11,23 +13,31 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -50,6 +60,7 @@ import com.strv.movies.ui.components.CustomTopAppBar
 import com.strv.movies.ui.error.ErrorScreen
 import com.strv.movies.ui.loading.LoadingScreen
 import com.strv.movies.ui.moviedetail.moviedetailutil.MovieDetailViewState
+import kotlinx.coroutines.launch
 
 @Composable
 fun MovieDetailScreen(
@@ -61,6 +72,15 @@ fun MovieDetailScreen(
 
     val viewState by viewModel.viewState.collectAsState(MovieDetailViewState(loading = true))
     val snackBarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = viewModel.snackbarFlow) {
+        coroutineScope.launch {
+            viewModel.snackbarFlow.collect { errorMessage ->
+                snackBarHostState.showSnackbar(message = errorMessage.message)
+            }
+        }
+    }
 
     Scaffold(
         scaffoldState = rememberScaffoldState(snackbarHostState = snackBarHostState),
@@ -72,18 +92,6 @@ fun MovieDetailScreen(
                 modifier = Modifier
                     .padding(start = 12.dp)
                     .clickable { onNavigateBackClick() })
-        },
-        floatingActionButtonPosition = FabPosition.End,
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick =
-                viewModel::addMovieToFavorites
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.moviieDetail_add_description)
-                )
-            }
         }
     ) {
         if (viewState.loading) {
@@ -96,7 +104,8 @@ fun MovieDetailScreen(
                     movie = it,
                     videoProgress = viewState.videoProgress,
                     setVideoProgress = viewModel::updateVideoProgress,
-                    trailer = viewState.trailer
+                    trailer = viewState.trailer,
+                    saveToFavorite = viewModel::addMovieToFavorites
                 )
             }
         }
@@ -108,7 +117,8 @@ fun MovieDetail(
     movie: MovieDetail,
     trailer: Trailer?,
     videoProgress: Float = 0f,
-    setVideoProgress: (second: Float) -> Unit
+    setVideoProgress: (second: Float) -> Unit,
+    saveToFavorite: () -> Unit
 ) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Log.d("TAG", "MovieDetail: $videoProgress")
@@ -119,12 +129,10 @@ fun MovieDetail(
                 setProgress = setVideoProgress
             )
         }
-
         Row {
             MoviePoster(movie = movie)
-            MovieInfo(movie = movie)
+            MovieInfo(movie = movie, saveToFavorite)
         }
-
         GenresList(genres = movie.genres)
     }
 }
@@ -158,7 +166,6 @@ fun MovieTrailerPlayer(
             })
         }
     }
-
     lifecycle.addObserver(youTubePlayer)
 
     // Gateway to traditional Android Views
@@ -179,11 +186,34 @@ fun MoviePoster(movie: MovieDetail) {
 }
 
 @Composable
-fun MovieInfo(movie: MovieDetail) {
+fun MovieInfo(
+    movie: MovieDetail,
+    addToFavorite: () -> Unit
+) {
     Column {
+        Row(
+            modifier = Modifier.padding(top = 16.dp, end = 16.dp)
+
+        ) {
+            Icon(
+                imageVector = Icons.Default.AddCircle,
+                contentDescription = stringResource(id = R.string.moviieDetail_add_description),
+                modifier = Modifier
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = rememberRipple(false),
+                        onClick = addToFavorite
+                    )
+            )
+            Text(
+                text = stringResource(R.string.movieDetail_addToFavorite),
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+
         Text(
             movie.title,
-            modifier = Modifier.padding(top = 16.dp, end = 16.dp),
+            modifier = Modifier.padding(top = 8.dp, end = 16.dp),
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp
         )

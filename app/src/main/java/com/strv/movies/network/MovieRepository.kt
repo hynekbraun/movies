@@ -15,12 +15,18 @@ import com.strv.movies.model.Profile
 import com.strv.movies.model.Trailer
 import com.strv.movies.model.toDomain
 import com.strv.movies.model.toEntity
+import com.strv.movies.network.auth.AuthError
 import com.strv.movies.network.profile.ProfileApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Singleton
+
+enum class AddToFavoriteError {
+    CREDENTIALS_ERROR, NETWORK_ERROR
+}
 
 @Singleton
 class MovieRepository @Inject constructor(
@@ -64,18 +70,23 @@ class MovieRepository @Inject constructor(
         }
     }
 
-    suspend fun addToFavorite(movieId: Int): Either<String, String> {
+    suspend fun addToFavorite(movieId: Int): Either<AddToFavoriteError, String> {
         Log.d("FAVORITE", "MovieRepository: Movie id $movieId")
         return try {
             val accountId = profileApi.getAccountDetails()
             Log.d("FAVORITE", "MovieRepository: Success Account id: ${accountId.id}")
-            val movieBody = AddFavoriteBody(mediaType = "movie",mediaId = movieId, favourite = true)
+            val movieBody =
+                AddFavoriteBody(mediaType = "movie", mediaId = movieId, favourite = true)
             val response = profileApi.addToFavorite(accountId.id, movieBody)
             Log.d("FAVORITE", "MovieRepository: Success added to favorite: ${response}")
             Either.Value(response.statusMessage)
+        } catch (e: HttpException) {
+            if (e.code() == 401) {
+                Either.Error(AddToFavoriteError.CREDENTIALS_ERROR)
+            } else Either.Error(AddToFavoriteError.NETWORK_ERROR)
         } catch (t: Throwable) {
             Log.d("FAVORITE", "MovieRepository: Error ${t.cause}")
-            Either.Error(t.localizedMessage ?: "Error getting to favorite")
+            Either.Error(AddToFavoriteError.NETWORK_ERROR)
         }
     }
 
